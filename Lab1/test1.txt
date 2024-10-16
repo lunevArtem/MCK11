@@ -1,0 +1,21 @@
+ClusterNode
+1
+CpuSpec
+AMD Ryzen 9 5900X
+12
+3.8
+24
+32
+Zen 3
+GpuSpec
+AMD Radeon RX 6800 XT
+16
+2
+GDDR6
+4608
+300
+RamSpec
+64
+ 3600
+LanSpec
+2500
