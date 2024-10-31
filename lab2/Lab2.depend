@@ -37,3 +37,25 @@
 	<fstream>
 	<string>
 
+1730332481 source:c:\users\lunev\desktop\Литвинов В.Н\lab2\matrixdiagonal.cpp
+	"MatrixDiagonal.h"
+
+1730290132 c:\users\lunev\desktop\Литвинов В.Н\lab2\matrix_diagonal.h
+	<iostream>
+	<stdexcept>
+	<vector>
+
+1730332192 c:\users\lunev\desktop\Литвинов В.Н\lab2\matrixdiagonal.h
+	<iostream>
+	<stdexcept>
+	<vector>
+	<fstream>
+
+1730329650 source:c:\users\lunev\desktop\Литвинов В.Н\lab2\main.cpp
+	<iostream>
+	<cstdlib>
+	<ctime>
+	<fstream>
+	"Matrix.h"
+	"MatrixDiagonal.h"
+

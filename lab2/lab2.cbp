@@ -34,6 +34,8 @@
 		</Compiler>
 		<Unit filename="Matrix.cpp" />
 		<Unit filename="Matrix.h" />
+		<Unit filename="MatrixDiagonal.cpp" />
+		<Unit filename="MatrixDiagonal.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />

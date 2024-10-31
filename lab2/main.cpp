@@ -3,6 +3,7 @@
 #include <ctime>   // Для функции time()
 #include <fstream> // Для std::ofstream
 #include "Matrix.h"
+#include "MatrixDiagonal.h" // Подключаем заголовочный файл для MatrixDiagonal
 
 // Функция для заполнения матрицы случайными значениями
 template <typename T>
@@ -85,9 +86,65 @@ int main() {
         transposeResult.print();
         transposeResult.exportToFile(outFile, "\nТранспонирование матрицы A:");
 
-        outFile.close(); // Закрытие файла
+         // Закрываем файл после записи матриц A и B
+        outFile.close();
 
-        std::cout << "All matrices successfully generated in file matrices.txt" << std::endl;
+       // Создаем диагональную матрицу C размером 3
+        MatrixDiagonal<double> matrixC(3);
+
+        // Заполняем диагональные элементы случайными значениями
+        for (unsigned i = 0; i < matrixC.size(); ++i) {
+            matrixC(i, i) = static_cast<double>(std::rand() % 100 + 1); // Случайное значение от 1 до 100
+            if (i < matrixC.size() - 1) {
+                matrixC(i, i + 1) = static_cast<double>(std::rand() % 100 + 1); // Случайное значение для верхней диагонали
+                matrixC(i + 1, i) = static_cast<double>(std::rand() % 100 + 1); // Случайное значение для нижней диагонали
+            }
+        }
+
+        // Выводим диагональную матрицу C на экран в консоль
+        std::cout << "Generated diagonal matrix C:" << std::endl;
+        matrixC.print();
+
+        // Создаем диагональную матрицу D размером 3
+        MatrixDiagonal<double> matrixD(3);
+
+        // Заполняем диагональные элементы случайными значениями
+        for (unsigned i = 0; i < matrixD.size(); ++i) {
+            matrixD(i, i) = static_cast<double>(std::rand() % 100 + 1); // Случайное значение от 1 до 100
+            if (i < matrixD.size() - 1) {
+                matrixD(i, i + 1) = static_cast<double>(std::rand() % 100 + 1); // Случайное значение для верхней диагонали
+                matrixD(i + 1, i) = static_cast<double>(std::rand() % 100 + 1); // Случайное значение для нижней диагонали
+            }
+        }
+
+        // Выводим диагональную матрицу D на экран в консоль
+        std::cout << "Generated diagonal matrix D:" << std::endl;
+        matrixD.print();
+
+        // Открываем файл для записи обеих диагональных матриц C и D
+        std::ofstream diagOutFile("Matrix_Diagonal.txt");
+        if (!diagOutFile) {
+            throw std::runtime_error("The file could not be opened for writing");
+        }
+
+        // Записываем диагональную матрицу C в файл
+        matrixC.exportToFile(diagOutFile, "Диагональная матрица C:");
+
+        // Записываем диагональную матрицу D в файл
+        matrixD.exportToFile(diagOutFile, "Диагональная матрица D:");
+
+
+        // Сложение матриц C и D
+        MatrixDiagonal<double> matrixSum = matrixC + matrixD;
+
+        // Выводим результат на экран
+        std::cout << "Sum of matrices C and D:" << std::endl;
+        matrixSum.print();
+
+        // Записываем результат в файл
+        matrixSum.exportToFile(diagOutFile, "Сумма матриц C и D:");
+
+        diagOutFile.close(); // Закрытие файла
 
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
@@ -95,4 +152,3 @@ int main() {
 
     return 0;
 }
-//
