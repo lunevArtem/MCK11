@@ -37,7 +37,7 @@
 	<fstream>
 	<string>
 
-1730332481 source:c:\users\lunev\desktop\Литвинов В.Н\lab2\matrixdiagonal.cpp
+1730809273 source:c:\users\lunev\desktop\Литвинов В.Н\lab2\matrixdiagonal.cpp
 	"MatrixDiagonal.h"
 
 1730290132 c:\users\lunev\desktop\Литвинов В.Н\lab2\matrix_diagonal.h
@@ -45,17 +45,35 @@
 	<stdexcept>
 	<vector>
 
-1730332192 c:\users\lunev\desktop\Литвинов В.Н\lab2\matrixdiagonal.h
+1730809225 c:\users\lunev\desktop\Литвинов В.Н\lab2\matrixdiagonal.h
 	<iostream>
 	<stdexcept>
 	<vector>
 	<fstream>
 
-1730329650 source:c:\users\lunev\desktop\Литвинов В.Н\lab2\main.cpp
+1730851064 source:c:\users\lunev\desktop\Литвинов В.Н\lab2\main.cpp
 	<iostream>
 	<cstdlib>
 	<ctime>
 	<fstream>
 	"Matrix.h"
 	"MatrixDiagonal.h"
+	"DenseMatrix.h"
+	"DenseMatrixArray.h"
+
+1730850526 source:c:\users\lunev\desktop\Литвинов В.Н\lab2\densematrix.cpp
+	"DenseMatrix.h"
+
+1730850588 c:\users\lunev\desktop\Литвинов В.Н\lab2\densematrix.h
+	<iostream>
+	<vector>
+
+1730851192 source:c:\users\lunev\desktop\Литвинов В.Н\lab2\densematrixarray.cpp
+	"DenseMatrixArray.h"
+	<fstream>
+
+1730850879 c:\users\lunev\desktop\Литвинов В.Н\lab2\densematrixarray.h
+	"DenseMatrix.h"
+	<vector>
+	<string>
 

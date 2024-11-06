@@ -3,7 +3,9 @@
 #include <ctime>   // Для функции time()
 #include <fstream> // Для std::ofstream
 #include "Matrix.h"
-#include "MatrixDiagonal.h" // Подключаем заголовочный файл для MatrixDiagonal
+#include "MatrixDiagonal.h" //
+#include "DenseMatrix.h"
+#include "DenseMatrixArray.h"
 
 // Функция для заполнения матрицы случайными значениями
 template <typename T>
@@ -144,9 +146,94 @@ int main() {
         // Записываем результат в файл
         matrixSum.exportToFile(diagOutFile, "Сумма матриц C и D:");
 
+       // Вычитание матриц C и D
+        MatrixDiagonal<double> matrixDiff = matrixC - matrixD;
+
+        // Выводим результат на экран
+        std::cout << "Difference of matrices C and D:" << std::endl;
+        matrixDiff.print();
+
+        // Записываем результат в файл
+        matrixDiff.exportToFile(diagOutFile, "Разность матриц C и D:");
+
+        // Поэлементное умножение
+        MatrixDiagonal<double> matrixProd = matrixC.elementWiseMultiply(matrixD);
+
+        // Выводим результат на экран
+        std::cout << "Element-wise product of matrices C and D:" << std::endl;
+        matrixProd.print();
+
+        // Записываем результат в файл
+        matrixProd.exportToFile(diagOutFile, "Поэлементное произведение матриц C и D:");
+
+        // Матричное умножение
+        MatrixDiagonal<double> matrixMatProd = matrixC.matrixMultiply(matrixD);
+
+        // Выводим результат на экран
+        std::cout << "Matrix product of matrices C and D:" << std::endl;
+        matrixMatProd.print();
+
+        // Записываем результат в файл
+        matrixMatProd.exportToFile(diagOutFile, "Матричное произведение матриц C и D:");
+
+        // Транспонирование матриц C и D
+        MatrixDiagonal<double> matrixC_T = matrixC.transpose();
+        MatrixDiagonal<double> matrixD_T = matrixD.transpose();
+
+        // Выводим результат на экран
+        std::cout << "Transposed matrix C:" << std::endl;
+        matrixC_T.print();
+
+        std::cout << "Transposed matrix D:" << std::endl;
+        matrixD_T.print();
+
+        // Записываем результат в файл
+        matrixC_T.exportToFile(diagOutFile, "Транспонированная матрица C:");
+        matrixD_T.exportToFile(diagOutFile, "Транспонированная матрица D:");
+
+        // Произведение Кронекера матриц C и D
+        MatrixDiagonal<double> matrixKroneckerProd = matrixC.kroneckerProduct(matrixD);
+
+        // Выводим результат на экран
+        std::cout << "Kronecker product of matrices C and D:" << std::endl;
+        matrixKroneckerProd.print();
+
+        // Записываем результат в файл
+        matrixKroneckerProd.exportToFile(diagOutFile, "Произведение Кронекера матриц C и D:");
+
+
+        DenseMatrixArray matrixArray(5); // Создаем массив из 5 элементов
+
+        // Создаем несколько плотных матриц
+        DenseMatrix* mat1 = new DenseMatrix(2, 2);
+        mat1->setValue(0, 0, 1);
+        mat1->setValue(0, 1, 2);
+        mat1->setValue(1, 0, 3);
+        mat1->setValue(1, 1, 4);
+
+        DenseMatrix* mat2 = new DenseMatrix(2, 2);
+        mat2->setValue(0, 0, 1);
+        mat2->setValue(0, 1, 2);
+        mat2->setValue(1, 0, 3);
+        mat2->setValue(1, 1, 4); // Идентичная матрица
+
+        DenseMatrix* mat3 = new DenseMatrix(3, 3);
+        mat3->setValue(0, 0, 5);
+
+        // Устанавливаем матрицы в массив
+        matrixArray.setMatrix(0, mat1);
+        matrixArray.setMatrix(1, mat2); // Не будет добавлена в массив (идентичная)
+        matrixArray.setMatrix(2, mat3);
+
+        // Печатаем массив матриц
+        matrixArray.print();
+
+        // Экспортируем массив матриц в файл
+        matrixArray.exportToFile("Matrix_Diagonal.txt");
+
         diagOutFile.close(); // Закрытие файла
 
-    } catch (const std::exception& e) {
+   } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
 

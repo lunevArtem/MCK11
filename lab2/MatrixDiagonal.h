@@ -35,6 +35,19 @@ public:
 
     // Метод для сложения двух диагональных матриц
     MatrixDiagonal<T> operator+(const MatrixDiagonal<T>& other) const;
+
+    // Метод для вычитания двух диагональных матриц
+    MatrixDiagonal<T> operator-(const MatrixDiagonal<T>& other) const;
+
+   // Поэлементное и матричное умножение
+    MatrixDiagonal<T> elementWiseMultiply(const MatrixDiagonal<T>& other) const;
+    MatrixDiagonal<T> matrixMultiply(const MatrixDiagonal<T>& other) const;
+
+    // Метод для транспонирования матрицы
+    MatrixDiagonal<T> transpose() const;
+
+    // Метод для произведения Кронекера двух диагональных матриц
+    MatrixDiagonal<T> kroneckerProduct(const MatrixDiagonal<T>& other) const;
 };
 
 #endif // MATRIX_DIAGONAL_H
