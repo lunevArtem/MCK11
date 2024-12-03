@@ -20,3 +20,4 @@ public:
 };
 
 #endif // DENSEMATRIX_H
+

@@ -32,8 +32,14 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="DenseMatrix.cpp" />
+		<Unit filename="DenseMatrix.h" />
+		<Unit filename="DenseMatrixArray.cpp" />
+		<Unit filename="DenseMatrixArray.h" />
 		<Unit filename="Matrix.cpp" />
 		<Unit filename="Matrix.h" />
+		<Unit filename="MatrixBlock.cpp" />
+		<Unit filename="MatrixBlock.h" />
 		<Unit filename="MatrixDiagonal.cpp" />
 		<Unit filename="MatrixDiagonal.h" />
 		<Unit filename="main.cpp" />

@@ -6,6 +6,7 @@
 #include "MatrixDiagonal.h" //
 #include "DenseMatrix.h"
 #include "DenseMatrixArray.h"
+#include "MatrixBlock.h"
 
 // Функция для заполнения матрицы случайными значениями
 template <typename T>
@@ -23,8 +24,8 @@ int main() {
         std::srand(static_cast<unsigned>(std::time(0)));
 
         // Создаем матрицы 3x3
-        MatrixDense<double> matrixA(3, 3);
-        MatrixDense<double> matrixB(3, 3);
+        MatrixDense<double> matrixA(8, 8);
+        MatrixDense<double> matrixB(8, 8);
 
         // Заполняем матрицы случайными значениями
         fillMatrix(matrixA);
@@ -92,7 +93,7 @@ int main() {
         outFile.close();
 
        // Создаем диагональную матрицу C размером 3
-        MatrixDiagonal<double> matrixC(3);
+        MatrixDiagonal<double> matrixC(8);
 
         // Заполняем диагональные элементы случайными значениями
         for (unsigned i = 0; i < matrixC.size(); ++i) {
@@ -108,7 +109,7 @@ int main() {
         matrixC.print();
 
         // Создаем диагональную матрицу D размером 3
-        MatrixDiagonal<double> matrixD(3);
+        MatrixDiagonal<double> matrixD(8);
 
         // Заполняем диагональные элементы случайными значениями
         for (unsigned i = 0; i < matrixD.size(); ++i) {
@@ -233,8 +234,64 @@ int main() {
 
         diagOutFile.close(); // Закрытие файла
 
-   } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+       // Работа с блочной матрицей
+        std::cout << "Starting work with MatrixBlock class" << std::endl;
+
+       // Создаем блочную матрицу 3x4 с блоками 2x3
+         BlockMatrix<double> blockMatrix(2, 3, 3, 4);
+
+         blockMatrix.fillRandom();
+
+         std::cout << "Block Matrix:" << std::endl;
+         blockMatrix.print();
+
+         blockMatrix.exportToFile("block_matrix.txt");
+
+         BlockMatrix<double> importedMatrix(0, 0, 0, 0);
+         if (importedMatrix.importFromFile("block_matrix.txt")) {
+             std::cout << "Block Matrix after import:" << std::endl;
+             importedMatrix.print();
+         } else {
+             std::cerr << "Failed to import matrix." << std::endl;
+         }
+
+         double blockScalar = 2.0;
+         blockMatrix.scalarMultiply(blockScalar);
+         std::cout << "After scalar multiplication by " << blockScalar << ":" << std::endl;
+         blockMatrix.print();
+
+         BlockMatrix<double> blockMatrix2(2, 3, 3, 4);
+         blockMatrix2.fillRandom();
+         std::cout << "Second Block Matrix for element-wise multiplication:" << std::endl;
+         blockMatrix2.print();
+
+         BlockMatrix<double> elementWiseResultB = blockMatrix.elementWiseMultiply(blockMatrix2); // Переименовано для избежания конфликта
+         std::cout << "Element-wise multiplication result:" << std::endl;
+         elementWiseResultB.print();
+
+         BlockMatrix<double> blockMatrix3(3, 2, 4, 3);
+         blockMatrix3.fillRandom();
+         std::cout << "Third Block Matrix for matrix multiplication:" << std::endl;
+         blockMatrix3.print();
+
+         BlockMatrix<double> matrixMultiplyResult = blockMatrix * blockMatrix3;
+         std::cout << "Matrix multiplication result:" << std::endl;
+         matrixMultiplyResult.print();
+
+         BlockMatrix<double> additionResultB = blockMatrix + blockMatrix2; // Переименовано для избежания конфликта
+         std::cout << "Addition result:" << std::endl;
+         additionResultB.print();
+
+         BlockMatrix<double> subtractionResultB = blockMatrix - blockMatrix2; // Переименовано для избежания конфликта
+         std::cout << "Subtraction result:" << std::endl;
+         subtractionResultB.print();
+
+         BlockMatrix<double> transposeResultB = blockMatrix.transpose(); // Переименовано для избежания конфликта
+         std::cout << "Transpose of the first matrix:" << std::endl;
+         transposeResultB.print();
+
+    } catch (const std::exception& e) {
+       std::cerr << "Error: " << e.what() << std::endl;
     }
 
     return 0;
