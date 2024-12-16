@@ -1,0 +1,23 @@
+# depslib dependency file v1.0
+1734372163 source:c:\users\lunev\desktop\Литвинов В.Н\lab3\main.cpp
+	<iostream>
+	"vector.h"
+	<iostream>
+	<vector>
+	<algorithm>
+	<utility>
+	<cmath>
+
+1734371941 c:\users\lunev\desktop\Литвинов В.Н\lab3\vector.h
+	<fstream>
+	<string>
+	<stdexcept>
+	<cstdlib>
+	<ctime>
+	<iostream>
+
+1734361867 source:c:\users\lunev\desktop\Литвинов В.Н\lab3\vector.cpp
+
+1734361779 c:\users\lunev\desktop\Литвинов В.Н\lab3\vector.cpp
+	"vector.h"
+

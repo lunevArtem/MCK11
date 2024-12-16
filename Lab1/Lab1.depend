@@ -16,3 +16,20 @@
 	<iostream>
 	<fstream>
 
+1730383350 source:d:\github\mck11\lab1\cluster.cpp
+	"cluster.h"
+	<algorithm>
+	<iostream>
+	<fstream>
+
+1730383350 d:\github\mck11\lab1\cluster.h
+	<vector>
+	<string>
+	<iostream>
+	<fstream>
+
+1730383350 source:d:\github\mck11\lab1\main.cpp
+	"cluster.h"
+	<iostream>
+	<fstream>
+
