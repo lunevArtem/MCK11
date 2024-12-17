@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1734372163 source:c:\users\lunev\desktop\Литвинов В.Н\lab3\main.cpp
+1734395189 source:c:\users\lunev\desktop\Литвинов В.Н\lab3\main.cpp
 	<iostream>
 	"vector.h"
 	<iostream>
@@ -7,6 +7,8 @@
 	<algorithm>
 	<utility>
 	<cmath>
+	<thread>
+	<chrono>
 
 1734371941 c:\users\lunev\desktop\Литвинов В.Н\lab3\vector.h
 	<fstream>
