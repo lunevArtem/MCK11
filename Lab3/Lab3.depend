@@ -1,14 +1,12 @@
 # depslib dependency file v1.0
-1734395189 source:c:\users\lunev\desktop\Литвинов В.Н\lab3\main.cpp
-	<iostream>
+1734618178 source:c:\users\lunev\desktop\Литвинов В.Н\lab3\main.cpp
 	"vector.h"
+	"functions.h"
 	<iostream>
 	<vector>
-	<algorithm>
-	<utility>
-	<cmath>
 	<thread>
 	<chrono>
+	<omp.h>
 
 1734371941 c:\users\lunev\desktop\Литвинов В.Н\lab3\vector.h
 	<fstream>
@@ -18,8 +16,15 @@
 	<ctime>
 	<iostream>
 
-1734361867 source:c:\users\lunev\desktop\Литвинов В.Н\lab3\vector.cpp
+1734477122 source:c:\users\lunev\desktop\Литвинов В.Н\lab3\vector.cpp
 
 1734361779 c:\users\lunev\desktop\Литвинов В.Н\lab3\vector.cpp
 	"vector.h"
+
+1734477121 c:\users\lunev\desktop\Литвинов В.Н\lab3\functions.h
+	<iostream>
+	<vector>
+	<algorithm>
+	<utility>
+	<cmath>
 
