@@ -1,0 +1,1098 @@
+cd C:\Users\lunev\Desktop\Литвинов В.Н\2 СЕМЕСТР\ПП\MPI_test\bin\Debug
+mpiexec -n 4 MPI_test.exe
+mpiexec -n 4 MPI_test.exe 100
+
+*************************************************14*********************************************
+#include <iostream>
+#include <mpi.h>
+
+int main(int argc, char** argv) {
+    // Инициализация MPI
+    MPI_Init(&argc, &argv);
+
+    // Получение ранга процесса
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+
+    // Получение общего числа процессов
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+
+    // Вывод информации о процессе
+    std::cout << "Hello from process " << world_rank <<  std::endl;
+    std::cout << "Count of processes " << world_size << std::endl;
+    // Завершение MPI
+    MPI_Finalize();
+
+    return 0;
+}
+
+
+
+*************************************************15***********************************************
+#include <iostream>
+#include <mpi.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int ProcNum;  // Общее количество процессов
+    int ProcRank; // Ранг текущего процесса
+    MPI_Status status;
+
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
+        std::cout << "I am " << ProcRank << " process from " << ProcNum<<" processes "<< std::endl;
+
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+*************************************************16***********************************************
+
+#include <iostream>
+#include <mpi.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int ProcNum;  // Общее количество процессов
+    int ProcRank; // Ранг текущего процесса
+
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
+    if (ProcRank == 0) {
+        // Процесс-мастер (ранг 0)
+        std::cout  << ProcNum << " processes." << std::endl;
+    }
+    MPI_Barrier(MPI_COMM_WORLD);
+
+   if (ProcRank != 0) {
+    if (ProcRank % 2 == 0) {
+        std::cout << "I am " << ProcRank << " process: SECOND!" << std::endl;
+    } else {
+        std::cout << "I am " << ProcRank << " process: FIRST!" << std::endl;
+    }
+}
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+
+*************************************************17***********************************************
+
+#include <iostream>
+#include <mpi.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int ProcNum;  // Общее количество процессов
+    int ProcRank; // Ранг текущего процесса
+    MPI_Status status;
+
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+    int message;
+    if (ProcRank == 0) {
+        message = 45;
+        MPI_Send(
+        &message,// Указатель на данные для отправки
+        1,        // Количество элементов для отправки
+        MPI_INT, // Тип данных
+        1, // Ранг процесса-получателя
+        1, // Тег сообщения
+        MPI_COMM_WORLD
+        );
+
+    }
+    else{
+        int received_message;
+         MPI_Recv(
+            &received_message,   // Буфер для приёма данных
+            1,          // Количество элементов
+            MPI_INT,    // Тип данных
+            0,   // Ранг процесса-отправителя
+            1,      // Тег сообщения
+            MPI_COMM_WORLD,
+            &status
+            );
+            std::cout << "received message " << received_message << std::endl;
+    }
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+*************************************************18***********************************************
+
+#include <iostream>
+#include <mpi.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);  // Инициализация MPI
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);  // Получаем ранг текущего процесса
+    MPI_Comm_size(MPI_COMM_WORLD, &size);  // Получаем общее количество процессов
+
+    const int prev_rank = (rank - 1 + size) % size;  // Предыдущий процесс в кольце
+    const int next_rank = (rank + 1) % size;         // Следующий процесс в кольце
+    int received_value = 0;                          // Инициализация переменной
+
+    if (rank == 0) {
+        // Процесс 0: отправляем начальное значение
+        const int send_value = rank;
+        MPI_Send(&send_value, 1, MPI_INT, next_rank, 0, MPI_COMM_WORLD);
+        
+        // Принимаем финальное значение от последнего процесса
+        MPI_Status status;
+        MPI_Recv(&received_value, 1, MPI_INT, prev_rank, 0, MPI_COMM_WORLD, &status);
+    } else {
+        // Остальные процессы: принимаем, увеличиваем, отправляем
+        MPI_Status status;
+        MPI_Recv(&received_value, 1, MPI_INT, prev_rank, 0, MPI_COMM_WORLD, &status);
+        
+        const int send_value = received_value + 1;
+        MPI_Send(&send_value, 1, MPI_INT, next_rank, 0, MPI_COMM_WORLD);
+    }
+
+    // Вывод результата с использованием потоков C++
+    std::cout << "Process [" << rank << "] received value: " << received_value << std::endl;
+
+    MPI_Finalize();  // Завершение работы с MPI
+    return 0;
+}
+
+*************************************************19***********************************************
+
+#include <iostream>
+#include <mpi.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int ProcNum;  // Общее количество процессов
+    int ProcRank; // Ранг текущего процесса
+    MPI_Status status;
+
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
+    if (ProcRank == 0) {
+        // Принимаем сообщения от всех других процессов
+        for (int i = 1; i < ProcNum; i++) {
+            int received_rank;
+            MPI_Recv(
+                &received_rank,   // Буфер для приёма данных
+                1,                // Количество элементов
+                MPI_INT,          // Тип данных
+                MPI_ANY_SOURCE,   // Принимать от любого отправителя
+                MPI_ANY_TAG,      // Принимать с любым тегом
+                MPI_COMM_WORLD,
+                &status
+            );
+            std::cout << "receive message " << received_rank << std::endl;
+        }
+    } else {
+        // Все остальные процессы
+        MPI_Send(
+            &ProcRank,   // Данные для отправки
+            1,           // Количество элементов
+            MPI_INT,     // Тип данных
+            0,           // Получатель (ранг 0)
+            0,           // Тег сообщения
+            MPI_COMM_WORLD
+        );
+    }
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+
+*************************************************20***********************************************
+
+#include <iostream>
+#include <mpi.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int ProcNum;  // Общее количество процессов
+    int ProcRank; // Ранг текущего процесса
+
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
+    MPI_Status status;
+    MPI_Request request;
+
+    int message;
+    if (ProcRank == 0) {
+        message = 45;
+        MPI_Isend(
+        &message,// Указатель на данные для отправки
+        1,        // Количество элементов для отправки
+        MPI_INT, // Тип данных
+        1, // Ранг процесса-получателя
+        1, // Тег сообщения
+        MPI_COMM_WORLD,
+        &request
+        );
+    MPI_Wait(&request, &status);
+    }
+    else{
+        int received_message;
+         MPI_Irecv(
+            &received_message,   // Буфер для приёма данных
+            1,          // Количество элементов
+            MPI_INT,    // Тип данных
+            0,   // Ранг процесса-отправителя
+            1,      // Тег сообщения
+            MPI_COMM_WORLD,
+            &request
+            );
+            MPI_Wait(&request, &status);
+            std::cout << "received message " << received_message << std::endl;
+    }
+
+    MPI_Finalize();
+    return 0;
+}
+
+*************************************************21***********************************************
+
+#include <mpi.h>
+#include <iostream>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int next_rank = (rank + 1) % size;
+    int prev_rank = (rank - 1 + size) % size;
+
+    int send_value = rank;
+    int received_value;
+
+    MPI_Status status;
+    MPI_Sendrecv(
+        &send_value, 1, MPI_INT, next_rank, 0,
+        &received_value, 1, MPI_INT, prev_rank, 0,
+        MPI_COMM_WORLD, &status
+    );
+
+    std::cout << "[" << rank << "]: Received value " << received_value << std::endl;
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+*************************************************22***********************************************
+
+#include <mpi.h>
+#include <iostream>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Status status;
+    // Отправка номера текущего процесса всем остальным
+    const int out_msg = rank;
+    for (int dest = 0; dest < size; ++dest) {
+        if (dest != rank) {
+            MPI_Send(&out_msg, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
+        }
+    }
+
+    // Прием сообщений от всех процессов
+    int received_msg;
+    std::cout << "Process " << rank << " received message from processes: ";
+    for (int src = 0; src < size; ++src) {
+        if (src != rank) {
+            MPI_Recv(&received_msg, 1, MPI_INT, src, 0, MPI_COMM_WORLD, &status);
+            // Вывод процессов от которых получено сообщение
+            std::cout << received_msg << " ";
+        }
+
+    }
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+
+*************************************************23.1***********************************************
+
+#include <mpi.h>
+#include <iostream>
+#include <cstring>
+#include <vector>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+ 
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int n = 0;
+    char* search_str = nullptr;
+
+    // Процесс 0 считывает строку
+    if (rank == 0) {
+        std::string input;
+        std::cout << "Enter string: ";
+        std::getline(std::cin, input);
+        n = input.length();
+        search_str = new char[n + 1];
+        strcpy(search_str, input.c_str());
+    }
+
+    double start_time, end_time;
+    start_time = MPI_Wtime();
+
+    // Рассылка длины строки
+    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    // Выделение памяти под строку в других процессах
+    if (rank != 0) {
+        search_str = new char[n + 1];
+    }
+
+    // Рассылка самой строки
+    MPI_Bcast(search_str, n, MPI_CHAR, 0, MPI_COMM_WORLD);
+    search_str[n] = '\0';
+
+    // Подсчёт символов в своей части
+    std::vector<int> local_counts(256, 0);
+    for (int i = rank; i < n; i += size) {
+        local_counts[static_cast<unsigned char>(search_str[i])]++;
+    }
+
+    // Сбор результатов в процессе 0
+    if (rank == 0) {
+        std::vector<int> global_counts(256, 0);
+        for (int i = 0; i < 256; ++i) {
+            global_counts[i] += local_counts[i];
+        }
+
+        // Получение результатов от других процессов
+        for (int src = 1; src < size; ++src) {
+            std::vector<int> received_counts(256);
+            MPI_Recv(received_counts.data(), 256, MPI_INT, src, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            for (int i = 0; i < 256; ++i) {
+                global_counts[i] += received_counts[i];
+            }
+        }
+
+        std::cout << "Character counts:\n";
+        for (int i = 0; i < 256; ++i) {
+            if (global_counts[i] > 0) {
+                std::cout << "'" << static_cast<char>(i) << "': "
+                          << global_counts[i] << "\n";
+            }
+        }
+        delete[] search_str;
+    } else {
+        // Отправка результатов процессу 0
+        MPI_Send(local_counts.data(), 256, MPI_INT, 0, 0, MPI_COMM_WORLD);
+        delete[] search_str;
+    }
+    end_time = MPI_Wtime();
+    std::cout << "Time taken: " << end_time - start_time << std::endl;
+    MPI_Finalize();
+    return 0;
+}
+
+
+*************************************************23.2**********************************************
+
+
+#include <mpi.h>
+#include <iostream>
+#include <cstring>
+#include <vector>
+
+int main(int argc, char** argv) {
+
+    MPI_Init(&argc, &argv);
+
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int n = 0;
+    char* search_str = nullptr;
+
+    // Процесс 0 считывает строку
+    if (rank == 0) {
+        std::string input;
+        std::cout << "Enter string: ";
+        std::getline(std::cin, input);
+        n = input.length();
+        search_str = new char[n + 1];
+        strcpy(search_str, input.c_str());
+    }
+
+    double start_time, end_time;
+    start_time = MPI_Wtime();
+
+    // Отправка длины строки всем процессам
+    if (rank == 0) {
+        for (int dest = 1; dest < size; ++dest) {
+            MPI_Send(&n, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
+        }
+    } else {
+        MPI_Recv(&n, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        search_str = new char[n + 1];
+    }
+
+    // Отправка строки всем процессам
+    if (rank == 0) {
+        for (int dest = 1; dest < size; ++dest) {
+            MPI_Send(search_str, n, MPI_CHAR, dest, 0, MPI_COMM_WORLD);
+        }
+    } else {
+        MPI_Recv(search_str, n, MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        search_str[n] = '\0';
+    }
+
+    // Подсчёт символов в своей части
+    std::vector<int> local_counts(256, 0);
+    for (int i = rank; i < n; i += size) {
+        local_counts[static_cast<unsigned char>(search_str[i])]++;
+    }
+
+    // Сбор результатов в процессе 0
+    if (rank == 0) {
+        std::vector<int> global_counts(256, 0);
+        for (int i = 0; i < 256; ++i) {
+            global_counts[i] += local_counts[i];
+        }
+
+        // Получение результатов от других процессов
+        for (int src = 1; src < size; ++src) {
+            std::vector<int> received_counts(256);
+            MPI_Recv(received_counts.data(), 256, MPI_INT, src, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            for (int i = 0; i < 256; ++i) {
+                global_counts[i] += received_counts[i];
+            }
+        }
+
+        std::cout << "Character counts:\n";
+        for (int i = 0; i < 256; ++i) {
+            if (global_counts[i] > 0) {
+                std::cout << "'" << static_cast<char>(i) << "': "
+                          << global_counts[i] << "\n";
+            }
+        }
+        delete[] search_str;
+    } else {
+        // Отправка результатов процессу 0
+        MPI_Send(local_counts.data(), 256, MPI_INT, 0, 0, MPI_COMM_WORLD);
+        delete[] search_str;
+    }
+    end_time = MPI_Wtime();
+    std::cout << "Time taken: " << end_time - start_time << std::endl;
+    MPI_Finalize();
+    return 0;
+}
+
+
+*************************************************24.1***********************************************
+
+#include <mpi.h>
+#include <iostream>
+#include <cmath>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+double start_time, end_time;
+    start_time = MPI_Wtime();
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    const int N = 10000; // Количество интервалов
+    int local_N = N / size;
+    int start = rank * local_N;
+    int end = (rank == size - 1) ? N : start + local_N;
+    double local_sum = 0.0;
+
+    for (int i = start; i < end; ++i) {
+        double x = (i + 0.5) / N;
+        local_sum += 4.0 / (1.0 + x * x);
+    }
+
+    double global_sum;
+    MPI_Reduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        double pi = global_sum / N;
+        std::cout << "Approximation of pi: " << pi << std::endl;
+    }
+    end_time = MPI_Wtime();
+    std::cout << "Time taken: " << end_time - start_time << std::endl;
+    MPI_Finalize();
+    return 0;
+}
+
+
+*************************************************24.2***********************************************
+
+
+#include <mpi.h>
+#include <iostream>
+#include <cmath>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    double start_time, end_time;
+    start_time = MPI_Wtime();
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Status status;
+
+    const int N = 10000; // Количество интервалов
+    int local_N = N / size;
+    int start = rank * local_N;
+    int end = (rank == size - 1) ? N : start + local_N;
+    double local_sum = 0.0;
+
+    for (int i = start; i < end; ++i) {
+        double x = (i + 0.5) / N;
+        local_sum += 4.0 / (1.0 + x * x);
+    }
+
+    double global_sum;
+    if (rank==0){
+        global_sum=local_sum;
+        for(int src=1; src<size; src++)
+        {
+            double received_sum;
+            MPI_Recv(&received_sum, 1, MPI_DOUBLE, src, 0, MPI_COMM_WORLD, &status);
+            global_sum+=received_sum;
+        }
+    } else {
+        MPI_Send(&local_sum, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+    }
+
+    if (rank == 0) {
+        double pi = global_sum / N;
+        std::cout << "Approximation of pi: " << pi << std::endl;
+    }
+
+    end_time = MPI_Wtime();
+    std::cout << "Time taken: " << end_time - start_time << std::endl;
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+
+*************************************************25.1***********************************************
+
+
+
+#include <mpi.h>
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+
+void printMatrix(const std::vector<int>& matrix, int n) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            std::cout << matrix[i * n + j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int n; // Размер матрицы
+    const int root = 0;
+
+    if (rank == root) {
+        std::cout << "Input size of matrix: ";
+        std::cin >> n;
+    }
+
+    // Передача размера матрицы всем процессам
+    MPI_Bcast(&n, 1, MPI_INT, root, MPI_COMM_WORLD);
+
+    // Проверка делимости строк на количество процессов
+    if (n % size != 0) {
+        if (rank == root) {
+            std::cerr << "ERROR! The size of the matrix should be a multiple of the number of processes." << std::endl;
+        }
+        MPI_Finalize();
+        return -1;
+    }
+
+    int rows_per_process = n / size;
+
+    // Матрицы A, B и C
+    std::vector<int> A(n * n), B(n * n), C(n * n);
+    std::vector<int> local_A(rows_per_process * n), local_C(rows_per_process * n);
+
+    // Инициализация матриц в корневом процессе
+    if (rank == root) {
+        srand(time(nullptr));
+        for (int i = 0; i < n * n; ++i) {
+            A[i] = rand() % 10; // Генерация случайных чисел для матрицы A
+            B[i] = rand() % 10; // Генерация случайных чисел для матрицы B
+        }
+
+        std::cout << "Matrix A:" << std::endl;
+        printMatrix(A, n);
+
+        std::cout << "Matrix B:" << std::endl;
+        printMatrix(B, n);
+    }
+
+    // Распределение строк матрицы A между процессами
+    MPI_Scatter(A.data(), rows_per_process * n, MPI_INT,
+                local_A.data(), rows_per_process * n, MPI_INT,
+                root, MPI_COMM_WORLD);
+
+    // Передача всей матрицы B всем процессам
+    MPI_Bcast(B.data(), n * n, MPI_INT, root, MPI_COMM_WORLD);
+
+    // Вычисление локальных частей матрицы C
+    for (int i = 0; i < rows_per_process; ++i) {
+        for (int j = 0; j < n; ++j) {
+            local_C[i * n + j] = 0;
+            for (int k = 0; k < n; ++k) {
+                local_C[i * n + j] += local_A[i * n + k] * B[k * n + j];
+            }
+        }
+    }
+
+    // Сбор локальных частей матрицы C в корневом процессе
+    MPI_Gather(local_C.data(), rows_per_process * n, MPI_INT,
+               C.data(), rows_per_process * n, MPI_INT,
+               root, MPI_COMM_WORLD);
+
+    // Вывод результата в корневом процессе
+    if (rank == root) {
+        std::cout << "Result matrix C:" << std::endl;
+        printMatrix(C, n);
+    }
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+
+*************************************************26***********************************************
+
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <mpi.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    std::string message;
+    int message_length = 0;
+
+    // Процесс 0 считывает сообщение
+    if (rank == 0) {
+        std::cout << "Input message(from 1 to 10 symbols): ";
+        std::getline(std::cin, message);
+
+        // Проверка длины сообщения
+        if (message.length() < 1 || message.length() > 10) {
+            std::cerr << "Error: The message must be between 1 and 10 characters long." << std::endl;
+            MPI_Abort(MPI_COMM_WORLD, 1);
+        }
+        message_length = message.length();
+    }
+
+    // Рассылка длины сообщения
+    MPI_Bcast(&message_length, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    // Если сообщение недопустимой длины, другие процессы должны завершить работу
+    if (message_length == 0 && rank != 0) {
+        MPI_Finalize();
+        return 1;
+    }
+
+    // Создаем новый коммуникатор для процессов с четными номерами
+    MPI_Comm new_comm;
+    MPI_Comm_split(MPI_COMM_WORLD, rank % 2 == 0, rank, &new_comm);
+
+    int new_rank = MPI_PROC_NULL;
+    int new_size = 0;
+
+    // Получаем ранк и размер нового коммуникатора (только если процесс входит в него)
+    if (rank % 2 == 0) {
+        MPI_Comm_rank(new_comm, &new_rank);
+        MPI_Comm_size(new_comm, &new_size);
+    }
+
+    // Подготавливаем буфер для сообщения
+    std::vector<char> message_buffer(message_length + 1); // +1 для нулевого символа
+    if (rank == 0) {
+        message.copy(message_buffer.data(), message_length);
+        message_buffer[message_length] = '\0'; // Нулевой символ для C-style string
+    }
+
+    // Рассылаем сообщение только в новом коммуникаторе
+    if (rank % 2 == 0) {
+        MPI_Bcast(message_buffer.data(), message_length + 1, MPI_CHAR, 0, new_comm);
+    }
+
+    // Вывод информации
+    std::string received_message;
+    if (rank % 2 == 0) {
+        received_message = message_buffer.data();
+    } else {
+        received_message = "no";
+    }
+
+    std::cout << "MPI_COMM_WORLD: " << rank << " from " << size;
+    if (rank % 2 == 0) {
+        std::cout << ". New comm: " << new_rank << " from " << new_size;
+    } else {
+        std::cout << ". New comm: no from no";
+    }
+    std::cout << ". Message = " << received_message << std::endl;
+
+    // Освобождаем коммуникатор
+    if (rank % 2 == 0) {
+        MPI_Comm_free(&new_comm);
+    }
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+
+
+*************************************************27***********************************************
+
+
+
+
+#include <iostream>
+#include <string>
+#include <mpi.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int n; // Количество "дочерних" процессов
+    int message;
+
+    if (rank == 0) {
+        std::cout << "Введите количество процессов для запуска (n): ";
+        std::cin >> n;
+
+        // Проверка, чтобы n не превышало доступное количество процессов
+        if (n > size - 1) {
+            std::cerr << "Ошибка: n не должно превышать size - 1" << std::endl;
+            MPI_Abort(MPI_COMM_WORLD, 1);
+        }
+    }
+
+    // Рассылаем n всем процессам
+    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        message = rank; // Сообщение родительского процесса
+        // Отправляем сообщение "дочерним" процессам
+        for (int i = 1; i <= n; ++i) {
+            MPI_Send(&message, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+        }
+
+        std::cout << "I am " << rank << " process from " << size << " processes! My parent is N/A" << std::endl;
+    } else if (rank <= n) {
+        MPI_Status status;
+        MPI_Recv(&message, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+        std::cout << "I am " << rank << " process from " << size << " processes! My parent is 0" << std::endl;
+    } else {
+        // Независимые процессы
+        std::cout << "I am " << rank << " process from " << size << " processes! My parent is N/A" << std::endl;
+    }
+
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+
+
+*************************************************28***********************************************
+
+#include <mpi.h>
+#include <iostream>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int N; // Количество интервалов
+    if (rank == 0) {
+        std::cout << "input quantity intervals (N): ";
+        std::cin >> N;
+    }
+    // использование MPI_Bcast в случае ручного ввода
+    MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    int local_N = N / size;
+    int start = rank * local_N;
+    int end = (rank == size - 1) ? N : start + local_N;
+    double local_sum = 0.0;
+
+    for (int i = start; i < end; ++i) {
+        double x = (i + 0.5) / N;
+        local_sum += 4.0 / (1.0 + x * x);
+    }
+
+if (rank != 0) {
+    MPI_Send(&local_sum, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+} else {
+    double pi = local_sum;
+    for (int i = 1; i < size; ++i) {
+        double temp;
+        MPI_Recv(&temp, 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        pi += temp;
+    }
+    pi /= N; // Нормализация суммы
+    std::cout << "Number of  Pi: " << pi << std::endl;
+}
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+
+
+*************************************************29***********************************************
+
+
+#include <iostream>
+#include <mpi.h>
+#include <random>
+#include <chrono>
+#include <iomanip>
+
+double calculate_pi(int total_points, int process_id, int num_processes) {
+    int points_per_process = total_points / num_processes;
+    int remaining_points = total_points % num_processes;
+
+    // Распределяем оставшиеся точки по процессам
+    if (process_id < remaining_points) {
+        points_per_process++;
+    }
+
+    std::random_device rd;
+    std::mt19937 gen(rd() + process_id); // Добавляем process_id для разных seed
+    std::uniform_real_distribution<> dis(0.0, 1.0);
+
+    int points_inside = 0;
+    for (int i = 0; i < points_per_process; ++i) {
+        double x = dis(gen);
+        double y = dis(gen);
+        if (x * x + y * y <= 1.0) {
+            points_inside++;
+        }
+    }
+
+    int total_inside;
+    MPI_Reduce(&points_inside, &total_inside, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (process_id == 0) {
+        return 4.0 * total_inside / total_points;
+    }
+    return 0.0;
+}
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int process_id, num_processes;
+    MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
+    MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
+
+    if (argc != 2) {
+        if (process_id == 0) {
+            std::cerr << "Usage: " << argv[0] << " <N>" << std::endl;
+        }
+        MPI_Finalize();
+        return 1;
+    }
+
+    long N = std::stol(argv[1]);
+
+    auto start_time = std::chrono::high_resolution_clock::now();
+
+    double pi = calculate_pi(N, process_id, num_processes);
+
+    auto end_time = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end_time - start_time;
+
+    if (process_id == 0) {
+        std::cout << "N: " << N << ", Processes: " << num_processes
+                  << ", Time: " << duration.count() << " sec, Pi: "
+                  << std::setprecision(15) << pi << std::endl;
+    }
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+*************************************************30***********************************************
+Создать OpenMP+MPI
+
+*************************************************31***********************************************
+#include <mpi.h>
+#include <omp.h>
+#include <iostream>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int n; // Количество нитей
+    if (rank == 0) {
+        std::cout << "Input number of threads (n): ";
+        std::cin >> n;
+    }
+
+    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    #pragma omp parallel num_threads(n)
+    {
+        int thread_id = omp_get_thread_num();
+        #pragma omp critical
+        {
+            std::cout << "I am " << thread_id << " thread from " << rank << " process. Number of hybrid threads = " << n * size << std::endl;
+        }
+    }
+
+    MPI_Barrier(MPI_COMM_WORLD); // Синхронизация после вывода
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+
+*************************************************32***********************************************
+
+
+#include <mpi.h>
+#include <iostream>
+#include <omp.h>
+#include <cmath>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+double start_time, end_time;
+
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+
+int n=4; // Количество нитей
+    if (rank == 0) {
+        std::cout << "Input number of threads (n): ";
+       // std::cin >> n;
+
+    }
+    start_time = MPI_Wtime();
+    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    const int N = 10000; // Общее количество интервалов
+    double local_sum = 0.0;
+
+    #pragma omp parallel num_threads(n)
+    {
+        int local_N = N / n;
+
+        int thread_id = omp_get_thread_num();
+
+        int start = thread_id * local_N;
+        int end = (thread_id == n - 1) ? N : start + local_N;
+        double thread_sum = 0.0;
+
+        for (int i = start; i < end; ++i) {
+            double x = (i + 0.5) / N;
+        thread_sum += 4.0 / (1.0 + x * x);
+        }
+        #pragma omp atomic
+        local_sum += thread_sum;
+    }
+
+
+        double global_sum;
+        MPI_Reduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+        if (rank == 0) {
+        double pi = global_sum / (N*size);
+        std::cout << "Approximation of pi: " << pi << std::endl;
+        }
+
+    end_time = MPI_Wtime();
+    std::cout << "Time taken: " << end_time - start_time << std::endl;
+    MPI_Finalize();
+    return 0;
+}
+

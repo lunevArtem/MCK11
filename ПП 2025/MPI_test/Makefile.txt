@@ -1,0 +1,16 @@
+CXX = mpic++
+CXXFLAGS = -Wall
+
+TARGET = MPI_test
+SOURCE = MPI_test.cpp
+
+all: $(TARGET)
+
+$(TARGET): $(SOURCE)
+	$(CXX) $(CXXFLAGS) $(SOURCE) -o $(TARGET)
+
+run: $(TARGET)
+	mpiexec -n 4 ./$(TARGET)
+
+clean:
+	rm -f $(TARGET)

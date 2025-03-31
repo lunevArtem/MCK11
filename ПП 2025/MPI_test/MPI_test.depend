@@ -1,0 +1,22 @@
+# depslib dependency file v1.0
+1738843252 source:c:\users\lunev\desktop\Литвинов В.Н\2 СЕМЕСТР\mpi_test\main.cpp
+	<iostream>
+	<mpi.h>
+
+1738843252 source:c:\users\lunev\desktop\Литвинов В.Н\2 СЕМЕСТР\mpi\mpi_test\main.cpp
+	<iostream>
+	<mpi.h>
+
+1743434749 source:c:\users\lunev\desktop\Литвинов В.Н\2 СЕМЕСТР\ПП\mpi_test\main.cpp
+	<mpi.h>
+	<iostream>
+	<omp.h>
+	<cmath>
+	<mpi.h>
+	<omp.h>
+	<iostream>
+	<mpi.h>
+	<iostream>
+	<omp.h>
+	<cmath>
+

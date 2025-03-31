@@ -1,0 +1,168 @@
+#include <iostream>
+#include <mpi.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int ProcNum;  // Общее количество процессов
+    int ProcRank; // Ранг текущего процесса
+    MPI_Status status;
+
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
+    if (ProcRank == 0) {
+        // Процесс-мастер (ранг 0)
+        std::cout << "Hello from process " << ProcRank << std::endl;
+
+        // Принимаем сообщения от всех других процессов
+        for (int i = 1; i < ProcNum; i++) {
+            int received_rank;
+            MPI_Recv(
+                &received_rank,   // Буфер для приёма данных
+                1,                // Количество элементов
+                MPI_INT,          // Тип данных
+                MPI_ANY_SOURCE,   // Принимать от любого отправителя
+                MPI_ANY_TAG,      // Принимать с любым тегом
+                MPI_COMM_WORLD,
+                &status
+            );
+            std::cout << "Hello from process " << received_rank << std::endl;
+        }
+    } else {
+        // Все остальные процессы
+        MPI_Send(
+            &ProcRank,   // Данные для отправки
+            1,           // Количество элементов
+            MPI_INT,     // Тип данных
+            0,           // Получатель (ранг 0)
+            0,           // Тег сообщения
+            MPI_COMM_WORLD
+        );
+    }
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+
+
+
+
+**************27**********************
+
+
+
+
+
+#include <iostream>
+#include <string>
+#include <mpi.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int message;
+    int n; // Количество процессов, запускаемых динамически
+    if (rank == 0) {
+    std::cout << "Введите количество процессов для запуска: " << std::endl;
+
+        std::cin >> n;
+        message = rank; // Запоминаем ранг процесса 0
+        // Рассылаем n другим процессам
+        for (int i = 1; i <= n; ++i) {
+            MPI_Send(&message, 1, MPI_INT, i, 0, MPI_COMM_WORLD); // Отправляем сообщение
+        }
+    } else if (rank <= n) {
+        MPI_Status status;
+        MPI_Recv(&message, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status); // Получаем сообщение
+
+        std::cout << "I am " << rank << " process from " << size << " processes! My parent is " << message << std::endl; // Выводим значение message
+    } else {
+
+        std::cout << "I am " << rank << " process from " << size << " processes! My parent is N/A" << std::endl;
+    }
+
+
+    MPI_Finalize();
+    return 0;
+}
+
+
+
+
+
+
+**************32**********************
+
+
+
+
+
+#include <mpi.h>
+#include <iostream>
+#include <omp.h>
+#include <cmath>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    double start_time = MPI_Wtime();
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int n; // Количество нитей
+    if (rank == 0) {
+        std::cout << "Input number of threads (n): ";
+        std::cin >> n;
+    }
+
+    // Распространяем количество нитей на все процессы
+    MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    const int N = 10000; // Общее количество интервалов
+    double local_sum = 0.0;
+
+    // Параллельное вычисление с использованием OpenMP
+    #pragma omp parallel num_threads(n)
+    {
+        int thread_id = omp_get_thread_num();
+        int local_N = N / (size * n); // Количество интервалов на одну нить
+        int start = (rank * n + thread_id) * local_N; // Начало интервала
+        int end = (thread_id == n - 1) ? N : start + local_N; // Конец интервала
+
+        double thread_sum = 0.0;
+
+        // Вычисляем локальную сумму для интервала
+        for (int i = start; i < end; ++i) {
+            double x = (i + 0.5) / N;
+            thread_sum += 4.0 / (1.0 + x * x);
+        }
+
+        // Суммируем результаты от всех нитей в локальную сумму
+        #pragma omp atomic
+        local_sum += thread_sum;
+    }
+
+    double global_sum;
+    // Суммируем результаты от всех процессов
+    MPI_Reduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        double pi = global_sum / N; // Нормализация суммы
+        std::cout << "Approximation of pi: " << pi << std::endl;
+    }
+
+    double end_time = MPI_Wtime();
+    std::cout << "Time taken: " << end_time - start_time << std::endl;
+
+    MPI_Finalize();
+    return 0;
+}
