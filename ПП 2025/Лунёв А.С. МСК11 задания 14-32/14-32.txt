@@ -618,8 +618,6 @@ int main(int argc, char** argv) {
 
 *************************************************25.1***********************************************
 
-
-
 #include <mpi.h>
 #include <iostream>
 #include <vector>
@@ -883,10 +881,9 @@ int main(int argc, char** argv) {
 
     int N; // Количество интервалов
     if (rank == 0) {
-        std::cout << "input quantity intervals (N): ";
+        std::cout << "Input quantity intervals (N): ";
         std::cin >> N;
     }
-    // использование MPI_Bcast в случае ручного ввода
     MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
     int local_N = N / size;
@@ -899,24 +896,38 @@ int main(int argc, char** argv) {
         local_sum += 4.0 / (1.0 + x * x);
     }
 
-if (rank != 0) {
-    MPI_Send(&local_sum, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-} else {
-    double pi = local_sum;
-    for (int i = 1; i < size; ++i) {
-        double temp;
-        MPI_Recv(&temp, 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        pi += temp;
+    MPI_Win win;
+    double *window_buffer;
+    if (rank == 0) {
+        MPI_Win_allocate(size * sizeof(double), sizeof(double), MPI_INFO_NULL, MPI_COMM_WORLD, &window_buffer, &win);
+    } else {
+        MPI_Win_allocate(0, sizeof(double), MPI_INFO_NULL, MPI_COMM_WORLD, &window_buffer, &win);
     }
-    pi /= N; // Нормализация суммы
-    std::cout << "Number of  Pi: " << pi << std::endl;
-}
+
+    MPI_Win_fence(MPI_MODE_NOPRECEDE, win);
+
+    if (rank == 0) {
+        MPI_Put(&local_sum, 1, MPI_DOUBLE, 0, 0, 1, MPI_DOUBLE, win);
+    } else {
+        MPI_Put(&local_sum, 1, MPI_DOUBLE, 0, rank, 1, MPI_DOUBLE, win);
+    }
+
+    MPI_Win_fence(MPI_MODE_NOSUCCEED, win);
+
+    if (rank == 0) {
+        double pi = 0.0;
+        for (int i = 0; i < size; ++i) {
+            pi += window_buffer[i];
+        }
+        pi /= N; // Нормализация суммы
+        std::cout << "Number of Pi: " << pi << std::endl;
+    }
+
+    MPI_Win_free(&win);
 
     MPI_Finalize();
-    return 0;
-}
 
-
+return 0;
 
 
 *************************************************29***********************************************
